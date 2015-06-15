@@ -85,7 +85,7 @@ public class ExampleController : Controller
   ```
 
 2. Launch the application and browse to /Example again. The controller will return a json object containing the above values.
-  > *Note: If you're viewing the site in Internet Explorer, you'll be prompted to download the json file. You can save it an open it in notepad.*
+  > *Note: If you're viewing the site in Internet Explorer, you'll be prompted to download the json file. You can click Open to view the json result in the application that's associated with json files - likely Visual Studio.*
 
 ## Changing the route to use the [controller] token
 1. Replace the `[Route("Example")]` attribute with `[Route("[controller]")]`:
