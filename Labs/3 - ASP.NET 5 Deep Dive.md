@@ -118,3 +118,45 @@ public void Configure(IApplicationBuilder appBuilder)
 ```
 1. Ensure the packages have finished restoring without errors and that they're all from the same beta release before continuing
 1. The application is now configured to use the latest packages from the unstable feed
+
+# Move the middleware to its own type
+1. Create a new class in the application `RequestCultureMiddleware`
+1. Add a constructor that takes a parameter `RequestDelegate next` and assigns it to a private field `private readonly RequestDelegate _next`
+1. Add a method `public Task Invoke(HttpContext context)`
+1. Copy the code from the inline middleware delegate in the application's `Startup.cs` file to the `Invoke` method you just created and fix the `next` method name
+1. Your middleware class should now look something like this:
+``` C#
+public class RequestCultureMiddleware
+{
+    private readonly RequestDelegate _next;
+
+    public RequestCultureMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public Task Invoke(HttpContext context)
+    {
+        var cultureQuery = context.Request.Query["culture"];
+        if (!string.IsNullOrWhiteSpace(cultureQuery))
+        {
+            var culture = new CultureInfo(cultureQuery);
+#if !DNXCORE50
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = culture;
+#else
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+#endif
+        }
+
+        return _next(context);
+    }
+}
+```
+1. Back in the application's `Startup.cs` file, delete the inline middleware delegate
+1. Add your new middleware class to the HTTP pipeline:
+``` C#
+app.UseMiddleware<RequestCultureMiddleware>();
+```
+1. Run the application again and see that the middleware is now running as a class
