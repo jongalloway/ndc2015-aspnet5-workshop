@@ -69,8 +69,9 @@ public class ExampleController : Controller
   ```
 
 5. Run the application and browse to /Example, e.g. http://localhost:40292/Example. You should see "Well hello there!" in your browser.
+
 ## Returning a complex type
-6. Modify the `Get()` method to return an `IEnumerable<string>` like this:
+1. Modify the `Get()` method to return an `IEnumerable<string>` like this:
 
   ```csharp
 [Route("Example")]
@@ -83,11 +84,11 @@ public class ExampleController : Controller
 }
   ```
 
-7. Launch the application and browse to /Example again. The controller will return a json object containing the above values.
+2. Launch the application and browse to /Example again. The controller will return a json object containing the above values.
   > *Note: If you're viewing the site in Internet Explorer, you'll be prompted to download the json file. You can save it an open it in notepad.*
 
 ## Changing the route to use the [controller] token
-8. Replace the `[Route("Example")]` attribute with `[Route("[controller]")]`:
+1. Replace the `[Route("Example")]` attribute with `[Route("[controller]")]`:
 
   ```csharp
 [Route("[controller]")]
@@ -100,12 +101,13 @@ public class ExampleController : Controller
 }
   ```
 
-9. Run the application again and browse to /Example again. Note that the `[controller]` route token automatically maps the URL based on the controller name.
+2. Run the application again and browse to /Example again. Note that the `[controller]` route token automatically maps the URL based on the controller name.
+ 
 ## Converting to a POCO controller
-10. Change the `ExampleController` class to no longer inherits from Controller by deleting `: Controller` from the end of the class declaration:
+1. Change the `ExampleController` class to no longer inherits from Controller by deleting `: Controller` from the end of the class declaration:
 
   ```csharp
 public class ExampleController
   ```
   
-11. Run the application one more time to verify that /Example still returns the json values. In ASP.NET MVC 6, controllers are not required to inherit from the `Controller` base class.
+2. Run the application one more time to verify that /Example still returns the json values. In ASP.NET MVC 6, controllers are not required to inherit from the `Controller` base class.
