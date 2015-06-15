@@ -10,7 +10,7 @@
 10. Install latest DNX using DNVM from the unstable feed
 ```
 dnvm upgrade -u
-dnvm install default -r
+dnvm install default -r coreclr
 coreclr -u
 ```
 11. Set the current DNX back to beta4
