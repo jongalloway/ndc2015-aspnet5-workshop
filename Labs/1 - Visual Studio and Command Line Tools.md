@@ -36,6 +36,5 @@ dnu publish --no-source
 20. Delete the publish output
 21. Publish the application again and include the .NET Core runtime as well
 ```
-dnu publish --no-source --runtime
-dnx-coreclr-win-x86.1.0.0-beta4
+dnu publish --no-source --runtime dnx-coreclr-win-x86.1.0.0-beta4
 ```
