@@ -6,7 +6,8 @@
 1. In the file, create an interface `IRequestIdFactory` with a single method `string MakeRequestId()`
 1. In the same file, create a class `RequestIdFactory` that implements `IRequestIdFactory` by using `Interlock.Increment` to make an increasing request ID
 1. The file should look something like this:
-``` C#
+
+  ``` C#
   public interface IRequestIdFactory
   {
       string MakeRequestId();
@@ -18,11 +19,13 @@
 
       public string MakeRequestId() => Interlocked.Increment(ref _requestId).ToString();
   }
-```
+  ```
+
 1. In the same file, create an interface `IRequestId` with a single property `string Id { get; }`
 1. In the same file, create a class `RequestId` that implements `IRequestId` by taking an `IRequestIdFactory` in the constructor and calling its `MakeRequestId` method to get a new ID.
 1. The whole file should now look something like this:
-``` C#
+
+  ``` C#
   public interface IRequestIdFactory
   {
       string MakeRequestId();
@@ -51,20 +54,20 @@
   
       public string Id => _requestId;
   }
-```
+  ```
 
 ## Register the request ID service in DI
 1. In the application's `Startup.cs` file, add a method `public void ConfigureServices(IServiceCollection services)`
 1. Register the `IRequestIdFactory` service as a singleton: `services.AddSingleton<IRequestIdFactory, RequestIdFactory>();`
 1. Register the `IRequestId` service as scoped: `services.AddScoped<IRequestId, RequestId>();`
 1 The `ConfigureServices` method should now look something like this:
-``` C#
+  ``` C#
 public void ConfigureServices(IServiceCollection services)
 {
     services.AddSingleton<IRequestIdFactory, RequestIdFactory>();
     services.AddScoped<IRequestId, RequestId>();
 }
-```
+  ```
 
 ## Create and add a middleware that logs the request ID
 1. Create a new folder in the application `Middleware`
@@ -72,7 +75,7 @@ public void ConfigureServices(IServiceCollection services)
 1. Create a constructor `public RequestIdMiddleware(RequestDelegate next, IRequestId requestId, ILogger<RequestIdMiddleware> logger)` and store the parameters in private fields
 1. Add a method `public Task Invoke(HttpContext context)` and in its body log the request ID using the `ILogger` and `IRequestId` injected from the constructor
 1. Your middleware class should look something like this:
-``` C#
+  ``` C#
   public class RequestIdMiddleware
   {
       private readonly RequestDelegate _next;
@@ -93,11 +96,11 @@ public void ConfigureServices(IServiceCollection services)
           return _next(context);
       }
   }
-```
+  ```
 
 ## Configure a logger so you can see the request ID messages
 1. Create a new class file `DebugLoggerProvider` and paste the following into it and resolve any required namespaces afterwards:
-``` C#
+  ``` C#
 public class DebugLoggerProvider : ILoggerProvider
 {
     public ILogger CreateLogger(string name)
@@ -152,7 +155,7 @@ public class DebugLogger : ILogger
         Debug.WriteLine($"{logLevel}: {message}", _name);
     }
 }
-```
+  ```
 1. In the `Startup.cs` file, add a parameter to the `Configure` method: `ILoggerFactory loggerFactory`
 1. Add the `DebugLoggerProvider` at the beginning of the method body: `loggerFactory.AddProvider(new DebugLoggerProvider());`
 1. Debug the application (F5) and you should see the messages containing the request ID being logged into the debug output
