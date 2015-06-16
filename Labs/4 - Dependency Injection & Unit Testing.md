@@ -79,19 +79,17 @@ public void ConfigureServices(IServiceCollection services)
   public class RequestIdMiddleware
   {
       private readonly RequestDelegate _next;
-      private readonly IRequestId _requestId;
       private readonly ILogger<RequestIdMiddleware> _logger;
   
-      public RequestIdMiddleware(RequestDelegate next, IRequestId requestId, ILogger<RequestIdMiddleware> logger)
+      public RequestIdMiddleware(RequestDelegate next, ILogger<RequestIdMiddleware> logger)
       {
           _next = next;
-          _requestId = requestId;
           _logger = logger;
       }
   
-      public Task Invoke(HttpContext context)
+      public Task Invoke(HttpContext context, IRequestId requestId)
       {
-          _logger.LogInformation($"Request {_requestId.Id} executing.");
+          _logger.LogInformation($"Request {requestId.Id} executing.");
   
           return _next(context);
       }
