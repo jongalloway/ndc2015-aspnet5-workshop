@@ -28,6 +28,7 @@ var products = db.Products
     .ToList();
 ```
 > *Note: The above code is calling a table valued function which implements the search query. Now search will work (you can verify by running the application and searching for "Shirt"), but results aren't ordered. We want to order results by CurrentPrice, but want to implent this using LINQ.* 
+
 3. Modify the above query to order by CurrentPrice as follows:
 ```csharp
 var products = db.Products
@@ -36,25 +37,28 @@ var products = db.Products
     .ToList();
 ```
 4. Run the application and search for "Shirt". View the database log file and scroll to the end. You should see the following:
-```sql
+
+    ```sql
 SELECT [p].[CategoryId], [p].[CurrentPrice], [p].[Description], [p].[DisplayName], [p].[ImageUrl], [p].[MSRP], [p].[ProductId]
 FROM (
     SELECT * FROM [dbo].[SearchProducts] (@p0)
 ) AS [p]
 ORDER BY [p].[CurrentPrice] DESC
-```
+    ```
 > *Note: The above query results demonstrate that we were able to run a SQL query, add a LINQ query, and EF7 composed the two into an intellligent SQL statement.*
 
 ## Using a Helper Property in the Search Query
 The above search results are just sorted by price. Instead, we want to order by savings. We'll utilize a helper property to calculate savings in the model.
+
 1. Open the `Models/UnicornStore/Products.cs` file. Notice that we have a `Savings` helper property which is calculated by subtracting `CurrentPrice` from `MSRP`.
 2. Modify the `Search` action in the `ShopController` to replace `CurrentPrice` with `Savings` as follows:
-```csharp
+
+    ```csharp
 var products = db.Products
     .FromSql("SELECT * FROM [dbo].[SearchProducts] (@p0)", term)
     .OrderByDescending(p => p.Savings)
     .ToList();
-```
+    ```
 3. Run the application and verify that the results are now sorted by product savings.
 
 > *Note: In the past, it was not possible to compose client-computed properties with database executed queries. EF7 is able to integrate the two, running the SQL query on the server and ordering the results on the client.*
@@ -62,14 +66,16 @@ var products = db.Products
 ## Multi-level Include With ThenInclude
 EF has supported multi-level includes since EF4.1, but the syntax has not been obvious or discoverable. EF7 now includes a simple syntax for multi-level includes with the `ThenInclude` operator. 
 > *Note: For more information, see the [Multi-level Include syntax](https://github.com/aspnet/EntityFramework/wiki/Design-Meeting-Notes:-January-8,-2015) discussion in the EF meeting notes.*
+
 1. Open the `OrdersController` and view the `Index` method. This currently shows Order information for your placed orders.
 2. Run the application, add some items to your card, and place the order.
 3. From header, select the dropdown from your name and click on the Orders list. Note that details for the products aren't shown.
 4. Modify the `OrdersController` to include the product details using the following query:
-```csharp
+
+    ```csharp
 var orders = db.Orders
     .Include(o => o.Lines).ThenInclude(l => l.Product)
     .Where(o => o.Username == User.GetUserName())
     .Where(o => o.State != OrderState.CheckingOut);
-```
+    ```
 5. Run the application and verify that products are included in the orders list.
