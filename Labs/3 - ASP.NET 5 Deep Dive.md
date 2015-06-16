@@ -42,17 +42,18 @@
 
   ``` C#
   public class Startup
+  {
+    private readonly IConfiguration _configuration;
+
+    public Startup()
     {
-        private readonly IConfiguration _configuration;
+        var configuration = new Configuration()
+            .AddJsonFile("config.json");
 
-        public Startup()
-        {
-            var configuration = new Configuration()
-                .AddJsonFile("config.json");
-
-            _configuration = configuration;
-        }
-        ...
+        _configuration = configuration;
+    }
+    ...
+  }
   ```
   
 1. Add a new JSON file to the project called `config.json`
@@ -98,32 +99,32 @@
 1. Add configuration to bring in the ASP.NET 5 dev feed and nuget.org
   
   ``` xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <add key="AspNetVNext" value="https://www.myget.org/F/aspnetvnext/api/v2" />
-    <add key="NuGet" value="https://nuget.org/api/v2/" />
-  </packageSources>
-</configuration>
+  <?xml version="1.0" encoding="utf-8"?>
+  <configuration>
+    <packageSources>
+      <add key="AspNetVNext" value="https://www.myget.org/F/aspnetvnext/api/v2" />
+      <add key="NuGet" value="https://nuget.org/api/v2/" />
+    </packageSources>
+  </configuration>
   ```
   
 1. Configure the project to use the latest DNX version you have installed by opening the `global.json` file in the solution directory and setting the `sdk` property to that version.
   - Note, you can use DNVM at the command line to list the versions you have installed
 
   ``` JSON
-{
-    "projects": [ "src", "test" ],
-    "sdk": {
-        "version": "1.0.0-beta6-12032"
-    }
-}
+  {
+      "projects": [ "src", "test" ],
+      "sdk": {
+          "version": "1.0.0-beta6-12032"
+      }
+  }
   ```
 
 1. Close and re-open the solution in Visual Studio
 1. In the application's `project.json` file, replace all references to `beta4` with `*` to indicate you want the latest packages from the configured feeds, e.g.
 
   ``` JSON
-"dependencies": {
+  "dependencies": {
     "Microsoft.AspNet.Server.IIS": "1.0.0-*",
     "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
     "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-*"
@@ -141,40 +142,40 @@
 1. Your middleware class should now look something like this:
 
   ``` C#
-public class RequestCultureMiddleware
-{
-    private readonly RequestDelegate _next;
-
-    public RequestCultureMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
-    public Task Invoke(HttpContext context)
-    {
-        var cultureQuery = context.Request.Query["culture"];
-        if (!string.IsNullOrWhiteSpace(cultureQuery))
-        {
-            var culture = new CultureInfo(cultureQuery);
-#if !DNXCORE50
-                Thread.CurrentThread.CurrentCulture = culture;
-                Thread.CurrentThread.CurrentUICulture = culture;
-#else
-            CultureInfo.CurrentCulture = culture;
-            CultureInfo.CurrentUICulture = culture;
-#endif
-        }
-
-        return _next(context);
-    }
-}
+  public class RequestCultureMiddleware
+  {
+      private readonly RequestDelegate _next;
+  
+      public RequestCultureMiddleware(RequestDelegate next)
+      {
+          _next = next;
+      }
+  
+      public Task Invoke(HttpContext context)
+      {
+          var cultureQuery = context.Request.Query["culture"];
+          if (!string.IsNullOrWhiteSpace(cultureQuery))
+          {
+              var culture = new CultureInfo(cultureQuery);
+  #if !DNXCORE50
+                  Thread.CurrentThread.CurrentCulture = culture;
+                  Thread.CurrentThread.CurrentUICulture = culture;
+  #else
+              CultureInfo.CurrentCulture = culture;
+              CultureInfo.CurrentUICulture = culture;
+  #endif
+          }
+  
+          return _next(context);
+      }
+  }
   ```
   
 1. Back in the application's `Startup.cs` file, delete the inline middleware delegate
 1. Add your new middleware class to the HTTP pipeline:
 
   ``` C#
-app.UseMiddleware<RequestCultureMiddleware>();
+  app.UseMiddleware<RequestCultureMiddleware>();
   ```
   
 1. Run the application again and see that the middleware is now running as a class
