@@ -101,60 +101,60 @@ public void ConfigureServices(IServiceCollection services)
 ## Configure a logger so you can see the request ID messages
 1. Create a new class file `DebugLoggerProvider` and paste the following into it and resolve any required namespaces afterwards:
   ``` C#
-public class DebugLoggerProvider : ILoggerProvider
-{
-    public ILogger CreateLogger(string name)
-    {
-        return new DebugLogger(name);
-    }
-}
-
-public class DebugLogger : ILogger
-{
-    private readonly string _name;
-
-    public DebugLogger(string name)
-    {
-        _name = name;
-    }
-
-    public IDisposable BeginScopeImpl(object state)
-    {
-        return null;
-    }
-
-    public bool IsEnabled(LogLevel logLevel)
-    {
-        return Debugger.IsAttached;
-    }
-
-    public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
-    {
-        if (!IsEnabled(logLevel))
-        {
-            return;
-        }
-
-        var message = "";
-        var values = state as ILogValues;
-
-        if (formatter != null)
-        {
-            message = formatter(state, exception);
-        }
-        else if (values != null)
-        {
-            message = string.Join(",", values.GetValues()
-                .Select(kvp => string.Format("  {0}: {1}", kvp.Key, kvp.Value)));
-        }
-        else
-        {
-            message = LogFormatter.Formatter(state, exception);
-        }
-
-        Debug.WriteLine($"{logLevel}: {message}", _name);
-    }
-}
+  public class DebugLoggerProvider : ILoggerProvider
+  {
+      public ILogger CreateLogger(string name)
+      {
+          return new DebugLogger(name);
+      }
+  }
+  
+  public class DebugLogger : ILogger
+  {
+      private readonly string _name;
+  
+      public DebugLogger(string name)
+      {
+          _name = name;
+      }
+  
+      public IDisposable BeginScopeImpl(object state)
+      {
+          return null;
+      }
+  
+      public bool IsEnabled(LogLevel logLevel)
+      {
+          return Debugger.IsAttached;
+      }
+  
+      public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+      {
+          if (!IsEnabled(logLevel))
+          {
+              return;
+          }
+  
+          var message = "";
+          var values = state as ILogValues;
+  
+          if (formatter != null)
+          {
+              message = formatter(state, exception);
+          }
+          else if (values != null)
+          {
+              message = string.Join(",", values.GetValues()
+                  .Select(kvp => string.Format("  {0}: {1}", kvp.Key, kvp.Value)));
+          }
+          else
+          {
+              message = LogFormatter.Formatter(state, exception);
+          }
+  
+          Debug.WriteLine($"{logLevel}: {message}", _name);
+      }
+  }
   ```
 1. In the `Startup.cs` file, add a parameter to the `Configure` method: `ILoggerFactory loggerFactory`
 1. Add the `DebugLoggerProvider` at the beginning of the method body: `loggerFactory.AddProvider(new DebugLoggerProvider());`
