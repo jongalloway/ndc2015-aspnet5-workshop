@@ -50,7 +50,17 @@
         "angular-route": "angular-route/angular-route.js"
     }
   ```
-2. Add the following code directly after the for loop at the end of the file, which will loop through the new `npm` modules and copy them over to `lib` as well:  
+2. Modify the `paths` section to include an `npm` path:
+
+  ```javascript
+  var paths = {
+    bower: "./bower_components/",
+    npm: "./node_modules/",
+    lib: "./" + project.webroot + "/lib/"
+  };
+  ```
+  
+3. Add the following code directly after the for loop at the end of the file, which will loop through the new `npm` modules and copy them over to `lib` as well:  
 
   ```javascript
     var npm = {
