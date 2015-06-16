@@ -6,36 +6,40 @@
 ## Logging
 1. Look at the `Logging/SqlLogger.cs` class. This is a simple class that implements `ILogger`, dumping queries to a file located at `C:\temp\DatabaseLog.sql`, but it's not turned on yet.
 2. Open `Logging/SqlLoggingProvider.cs`. Modify the `CreateLogger` method so it returns an instance of SqlLogger:
-```csharp
+
+    ```csharp
 if(_whitelist.Contains(name))
 {
     return new SqlLogger();
 }
-```
+    ```
 3. Open `Startup.cs` and scroll down to the `Configure` method. Uncomment the following line:
-```csharp
+
+    ```csharp
 loggerfactory.AddProvider(new SqlLoggerProvider());
-```
+    ```
 4. Run the application and browse through the store.
 5. Open the SQL Log file found in `C:\temp\DatabaseLog.sql`. Keep this file open, as you'll be using it in the following steps.
 
 ## Composing Inline SQL with LINQ
 1. The site includes the start of a search feature, but it hasn't been implemented yet. Open the `Controllers/ShopController.cs` file and scroll to the `Search` action.
 2. Replace the the first line (which creates an empty Products array) with the following:
-```csharp
+
+    ```csharp
 var products = db.Products
     .FromSql("SELECT * FROM [dbo].[SearchProducts] (@p0)", term)
     .ToList();
-```
+    ```
 > *Note: The above code is calling a table valued function which implements the search query. Now search will work (you can verify by running the application and searching for "Shirt"), but results aren't ordered. We want to order results by CurrentPrice, but want to implent this using LINQ.* 
 
 3. Modify the above query to order by CurrentPrice as follows:
-```csharp
+
+    ```csharp
 var products = db.Products
     .FromSql("SELECT * FROM [dbo].[SearchProducts] (@p0)", term)
     .OrderByDescending(p => p.CurrentPrice)
     .ToList();
-```
+    ```
 4. Run the application and search for "Shirt". View the database log file and scroll to the end. You should see the following:
 
     ```sql
