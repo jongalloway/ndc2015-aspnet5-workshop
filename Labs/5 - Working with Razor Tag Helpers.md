@@ -34,3 +34,6 @@
 1. Note that the Tag Helper is rendering itself as a `<repeat>` tag. We'll fix that now so that only the contens are rendered.
 1. Open the `RepeatTagHelper` again and in the `ProcessAsync` method add a line to null out the tag name: `output.TagName = null;`
 1. Run the application again and see that the outer tag is no longer rendered
+
+# Extra if you have time
+1. Experiment with decorating your `RepeatTagHelper` class with the `[TargetElement()]` attribute to change which HTML tag and/or attribute names it will attach itself to 
