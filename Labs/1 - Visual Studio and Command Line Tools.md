@@ -8,33 +8,33 @@
 8. Install DNVM from github.com/aspnet/home
 9. Run `dnvm` and look at the commands
 10. Install latest DNX using DNVM from the unstable feed
-```
-dnvm upgrade -u
-dnvm install default -r coreclr -u
-```
+  ```
+  dnvm upgrade -u
+  dnvm install default -r coreclr -u
+  ```
 11. Set the current DNX back to beta4
 12. Run the app you created before from the command line
-```
-dnx . web
-```
+  ```
+  dnx . web
+  ```
 13. Delete the project.lock.json file from the application
 14. Recreate the file by running a package restore
-```
-dnu restore
-```
+  ```
+  dnu restore
+  ```
 15. Publish the application to a folder
-```
-dnu publish
-```
+  ```
+  dnu publish
+  ```
 16. Inspect the publish output
 17. Delete the publish output
 18. Publish the application again with pre-compilation
-```
-dnu publish --no-source
-```
+  ```
+  dnu publish --no-source
+  ```
 19. Inspect the publish output again and note the additional "application package"
 20. Delete the publish output
 21. Publish the application again and include the .NET Core runtime as well
-```
-dnu publish --no-source --runtime dnx-coreclr-win-x86.1.0.0-beta4
-```
+  ```
+  dnu publish --no-source --runtime dnx-coreclr-win-x86.1.0.0-beta4
+  ```
