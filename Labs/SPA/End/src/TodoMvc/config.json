@@ -1,0 +1,10 @@
+{
+  "AppSettings": {
+    "SiteTitle": "TodoMvc"
+  },
+  "Data": {
+    "DefaultConnection": {
+      "ConnectionString": "Server=(localdb)\\mssqllocaldb;Database=aspnet5-TodoMvc-820067c5-5f5b-45a9-850c-a8ad68ef0286;Trusted_Connection=True;MultipleActiveResultSets=true"
+    }
+  }
+}
