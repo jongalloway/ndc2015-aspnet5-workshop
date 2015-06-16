@@ -96,6 +96,8 @@ public void ConfigureServices(IServiceCollection services)
   }
   ```
 
+1. Add the middleware to your pipeline back in `Startup.cs` by calling `app.UseMiddleware<RequestIdMiddleware>();`
+
 ## Configure a logger so you can see the request ID messages
 1. Create a new class file `DebugLoggerProvider` and paste the following into it and resolve any required namespaces afterwards:
   ``` C#
